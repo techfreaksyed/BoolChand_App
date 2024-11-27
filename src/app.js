@@ -25,6 +25,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+app.get("/", async (req, res) => {
+  return "Hello welcome";
+});
+
 // Login Route
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -47,14 +51,14 @@ app.post("/getCrocsData", async (req, res) => {
   try {
     const { page, limit } = req.body;
 
-    const startIndex = (page - 1) * limit
-    const endIndex = (page) * limit
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
 
     const pool = await sql.connect(config);
     const result = await pool.request().query(`SELECT * FROM  MiscData.dbo.pj_Crocs_Tran`);
     const arrResult = convertKeysToLowerCaseInArray(result.recordset);
     const arrWithId = addIdToObjects(arrResult);
-    const newArr = arrWithId.slice(startIndex,endIndex)
+    const newArr = arrWithId.slice(startIndex, endIndex);
     res.json([newArr]);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
